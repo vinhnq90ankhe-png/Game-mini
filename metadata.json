@@ -1,0 +1,6 @@
+{
+  "name": "Bé Xếp Đúng Số Lượng",
+  "description": "Trò chơi giáo dục mầm non tương tác giúp bé 4-5 tuổi nhận biết và sắp xếp tương ứng số lượng 1 và 2 với Robot AI mầm non ngộ nghĩnh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

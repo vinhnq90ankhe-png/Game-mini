@@ -1,0 +1,2469 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Bé Xếp Đúng Số Lượng - Game Mầm Non 1 và 2</title>
+    <meta name="description" content="Trò chơi giáo dục mầm non tương tác giúp bé 4-5 tuổi nhận biết và sắp xếp tương ứng số lượng 1 và 2 với Robot AI mầm non ngộ nghĩnh." />
+    <meta property="og:title" content="Bé Xếp Đúng Số Lượng - Game Mầm Non 1 và 2" />
+    <meta property="og:description" content="Trò chơi giáo dục mầm non tương tác giúp bé 4-5 tuổi nhận biết và sắp xếp tương ứng số lượng 1 và 2 với Robot AI mầm non ngộ nghĩnh." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+
+      :root {
+        --bg-main: #f0f7ff;
+        --pastel-blue: #dbeafe;
+        --pastel-blue-dark: #3b82f6;
+        --pastel-green: #dcfce7;
+        --pastel-green-dark: #10b981;
+        --pastel-pink: #fce7f3;
+        --pastel-pink-dark: #ec4899;
+        --pastel-yellow: #fef3c7;
+        --pastel-yellow-dark: #f59e0b;
+        --pastel-purple: #f3e8ff;
+        --pastel-purple-dark: #8b5cf6;
+        --robot-cyan: #06b6d4;
+        --robot-dark: #0891b2;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --font-kids: 'Segoe UI', system-ui, -apple-system, Roboto, 'Nunito', 'Comic Sans MS', sans-serif;
+      }
+
+      body {
+        font-family: var(--font-kids);
+        background: #e0f2fe url('/src/assets/images/preschool_game_bg_1790643755831.jpg') center center / cover no-repeat fixed;
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-x: hidden;
+        color: var(--text-dark);
+        touch-action: manipulation;
+      }
+
+      /* Game Outer Wrapper - 16:9 responsive frame */
+      #game-app {
+        width: 100%;
+        max-width: 1100px;
+        aspect-ratio: 16 / 9;
+        min-height: 600px;
+        background: url('/src/assets/images/preschool_game_bg_1790643755831.jpg') center center / cover no-repeat, #ffffff;
+        border-radius: 28px;
+        box-shadow: 0 20px 45px rgba(30, 58, 138, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        border: 4px solid #ffffff;
+      }
+
+      @media (max-aspect-ratio: 16/9) or (max-width: 900px) {
+        #game-app {
+          aspect-ratio: auto;
+          min-height: 100vh;
+          min-height: 100dvh;
+          border-radius: 0;
+          border: none;
+        }
+      }
+
+      /* Cloud & Star Background Accents */
+      .bg-decor {
+        position: absolute;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.6;
+      }
+      .cloud-1 { top: 18px; left: 24px; font-size: 32px; animation: floatCloud 7s ease-in-out infinite alternate; }
+      .cloud-2 { top: 40px; right: 80px; font-size: 38px; animation: floatCloud 9s ease-in-out infinite alternate-reverse; }
+      .rainbow { bottom: 10px; right: 14px; font-size: 34px; opacity: 0.7; }
+      .star-bg { font-size: 20px; color: #fbbf24; animation: spinStar 6s linear infinite; }
+
+      @keyframes floatCloud {
+        from { transform: translateY(0px) translateX(0px); }
+        to { transform: translateY(-8px) translateX(12px); }
+      }
+      @keyframes spinStar {
+        0% { transform: scale(0.9) rotate(0deg); }
+        50% { transform: scale(1.1) rotate(180deg); }
+        100% { transform: scale(0.9) rotate(360deg); }
+      }
+
+      /* Top Bar */
+      .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 2px solid rgba(226, 232, 240, 0.8);
+        z-index: 10;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .game-title-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .app-logo-badge {
+        background: #06b6d4;
+        color: white;
+        font-size: 22px;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(6, 182, 212, 0.35);
+      }
+      .game-heading {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1e3a8a;
+        letter-spacing: -0.5px;
+      }
+      .game-subheading {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .stats-group {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #ffffff;
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: 2px solid #e2e8f0;
+        font-weight: 700;
+        font-size: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+      }
+      .stat-star { color: #f59e0b; font-size: 18px; }
+      .stat-step { color: #3b82f6; }
+
+      .progress-container {
+        width: 120px;
+        height: 12px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #06b6d4);
+        width: 0%;
+        transition: width 0.4s ease;
+      }
+
+      .ctrl-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        border: 2px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.15s, background-color 0.15s, border-color 0.15s;
+        touch-action: manipulation;
+      }
+      .icon-btn:hover {
+        background: #f1f5f9;
+        border-color: #94a3b8;
+        transform: scale(1.05);
+      }
+      .icon-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Screens Layout */
+      .screen-container {
+        flex: 1;
+        position: relative;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* 1. START SCREEN */
+      #start-screen {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      .welcome-robot-wrapper {
+        position: relative;
+        margin-bottom: 20px;
+        animation: robotBounce 2.5s ease-in-out infinite alternate;
+      }
+      @keyframes robotBounce {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-12px); }
+      }
+
+      .robot-avatar {
+        width: 140px;
+        height: 140px;
+      }
+
+      .speech-bubble-intro {
+        background: #ffffff;
+        border: 3px solid #38bdf8;
+        border-radius: 20px;
+        padding: 14px 22px;
+        max-width: 480px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #0369a1;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+        position: relative;
+      }
+      .speech-bubble-intro::after {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 0 12px 12px 12px;
+        border-style: solid;
+        border-color: transparent transparent #ffffff transparent;
+      }
+
+      .main-title {
+        font-size: 38px;
+        font-weight: 900;
+        color: #1e3a8a;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      }
+      .sub-title {
+        font-size: 20px;
+        color: #f59e0b;
+        font-weight: 800;
+        margin-bottom: 30px;
+      }
+
+      .big-start-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        font-size: 26px;
+        font-weight: 800;
+        padding: 16px 48px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 8px 0 #047857, 0 16px 25px rgba(16, 185, 129, 0.4);
+        transition: transform 0.1s, box-shadow 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .big-start-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 0 #047857, 0 20px 30px rgba(16, 185, 129, 0.45);
+      }
+      .big-start-btn:active {
+        transform: translateY(6px);
+        box-shadow: 0 2px 0 #047857, 0 8px 15px rgba(16, 185, 129, 0.4);
+      }
+
+      /* 2. GAMEPLAY SCREEN */
+      #game-screen {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 16px 24px;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+      }
+
+      /* Robot Guidance Bar */
+      .guidance-box {
+        display: flex;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 20px;
+        border: 2px solid #bae6fd;
+        padding: 10px 18px;
+        gap: 14px;
+        box-shadow: 0 4px 12px rgba(186, 230, 253, 0.35);
+      }
+      .mini-robot {
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .mini-robot:hover {
+        transform: scale(1.1) rotate(5deg);
+      }
+      .robot-speech {
+        flex: 1;
+        font-size: 18px;
+        font-weight: 700;
+        color: #0369a1;
+        line-height: 1.35;
+      }
+      .voice-speak-btn {
+        background: #e0f2fe;
+        color: #0284c7;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .voice-speak-btn:hover {
+        background: #bae6fd;
+      }
+
+      /* Game Main Stage Area */
+      .game-stage {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        min-height: 320px;
+      }
+
+      /* Action Bar at Bottom */
+      .action-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        padding-top: 8px;
+      }
+      .check-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 800;
+        padding: 12px 42px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 6px 0 #047857, 0 10px 20px rgba(16, 185, 129, 0.3);
+        transition: transform 0.1s, box-shadow 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .check-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 0 #047857, 0 14px 22px rgba(16, 185, 129, 0.35);
+      }
+      .check-btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 #047857, 0 4px 10px rgba(16, 185, 129, 0.3);
+      }
+
+      .reset-btn {
+        background: #f1f5f9;
+        color: #475569;
+        border: 2px solid #cbd5e1;
+        font-size: 16px;
+        font-weight: 700;
+        padding: 10px 22px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .reset-btn:hover {
+        background: #e2e8f0;
+      }
+
+      /* Common styles for game elements */
+      .digit-badge {
+        font-size: 48px;
+        font-weight: 900;
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+      }
+      .digit-1 {
+        background: #dbeafe;
+        color: #1d4ed8;
+        border: 3px solid #93c5fd;
+      }
+      .digit-2 {
+        background: #fef3c7;
+        color: #b45309;
+        border: 3px solid #fcd34d;
+      }
+
+      /* GAME TYPE 1: XẾP ĐỒ VẬT VÀO ĐÚNG SỐ */
+      .t1-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        align-items: center;
+      }
+      .t1-boxes-row {
+        display: flex;
+        gap: 32px;
+        width: 100%;
+        max-width: 820px;
+        justify-content: center;
+      }
+      .target-box {
+        flex: 1;
+        max-width: 380px;
+        min-height: 165px;
+        background: #f8fafc;
+        border: 3px dashed #94a3b8;
+        border-radius: 24px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+      .target-box.box-1-zone {
+        border-color: #60a5fa;
+        background: #f0f7ff;
+      }
+      .target-box.box-2-zone {
+        border-color: #f59e0b;
+        background: #fffbeb;
+      }
+      .target-box.drop-hover {
+        transform: scale(1.03);
+        border-style: solid;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+      }
+      .box-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .box-name {
+        font-size: 22px;
+        font-weight: 800;
+        color: #1e3a8a;
+      }
+      .box-count-tag {
+        font-size: 13px;
+        font-weight: 700;
+        background: #ffffff;
+        padding: 2px 10px;
+        border-radius: 999px;
+        border: 1px solid #cbd5e1;
+        color: #64748b;
+      }
+      .box-items-slot {
+        flex: 1;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding: 8px;
+        min-height: 85px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.65);
+      }
+
+      .items-tray {
+        width: 100%;
+        max-width: 820px;
+        min-height: 90px;
+        background: #ffffff;
+        border-radius: 20px;
+        border: 2px solid #e2e8f0;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+      }
+      .tray-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #64748b;
+        margin-right: 8px;
+      }
+
+      /* Draggable Items */
+      .drag-item {
+        font-size: 50px;
+        width: 76px;
+        height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        border-radius: 20px;
+        border: 3px solid #e2e8f0;
+        cursor: grab;
+        touch-action: none;
+        transition: transform 0.15s, box-shadow 0.15s;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+        position: relative;
+      }
+      .drag-item:active {
+        cursor: grabbing;
+      }
+      .drag-item.is-selected {
+        border-color: #06b6d4;
+        box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.4), 0 8px 16px rgba(0,0,0,0.12);
+        animation: bobSelect 0.8s ease-in-out infinite alternate;
+      }
+      @keyframes bobSelect {
+        from { transform: translateY(0); }
+        to { transform: translateY(-8px); }
+      }
+
+      /* GAME TYPE 2: KÉO SỐ ĐẾN NHÓM ĐỒ VẬT */
+      .t2-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .t2-groups-row {
+        display: flex;
+        gap: 32px;
+        width: 100%;
+        max-width: 820px;
+        justify-content: center;
+      }
+      .group-card-t2 {
+        flex: 1;
+        max-width: 380px;
+        min-height: 180px;
+        background: #fdf4ff;
+        border: 3px solid #f0abfc;
+        border-radius: 24px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        box-shadow: 0 6px 14px rgba(240, 171, 252, 0.15);
+      }
+      .group-items-display {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 12px;
+        font-size: 54px;
+      }
+      .number-target-slot {
+        width: 80px;
+        height: 80px;
+        border: 3px dashed #c084fc;
+        border-radius: 20px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .number-target-slot.drop-hover {
+        transform: scale(1.08);
+        border-style: solid;
+        border-color: #9333ea;
+        box-shadow: 0 0 16px rgba(147, 51, 234, 0.35);
+      }
+      .slot-placeholder {
+        font-size: 14px;
+        font-weight: 700;
+        color: #a855f7;
+        text-align: center;
+      }
+
+      .numbers-tray {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+        justify-content: center;
+        padding: 14px 28px;
+        background: #ffffff;
+        border-radius: 24px;
+        border: 2px solid #e2e8f0;
+      }
+      .drag-number-card {
+        width: 84px;
+        height: 84px;
+        font-size: 52px;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 22px;
+        cursor: grab;
+        touch-action: none;
+        transition: transform 0.15s, box-shadow 0.15s;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+      }
+      .drag-number-card:active {
+        cursor: grabbing;
+      }
+      .drag-number-card.is-selected {
+        box-shadow: 0 0 0 4px #3b82f6, 0 8px 20px rgba(59, 130, 246, 0.4);
+        animation: bobSelect 0.8s ease-in-out infinite alternate;
+      }
+
+      /* GAME TYPE 3: KÉO NHÓM ĐỒ VẬT ĐẾN ĐÚNG SỐ (Khối thống nhất) */
+      .t3-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .t3-number-targets {
+        display: flex;
+        gap: 32px;
+        width: 100%;
+        max-width: 820px;
+        justify-content: center;
+      }
+      .unified-target-box {
+        flex: 1;
+        max-width: 380px;
+        min-height: 180px;
+        border-radius: 24px;
+        border: 3px dashed #94a3b8;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8fafc;
+        transition: all 0.2s;
+      }
+      .unified-target-box.box-1-zone {
+        border-color: #60a5fa;
+        background: #eff6ff;
+      }
+      .unified-target-box.box-2-zone {
+        border-color: #f59e0b;
+        background: #fffbeb;
+      }
+      .unified-target-box.drop-hover {
+        transform: scale(1.04);
+        border-style: solid;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+      }
+      .group-block-slot {
+        width: 100%;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+      }
+
+      .unified-groups-tray {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 820px;
+        padding: 14px;
+      }
+      .unified-group-block {
+        padding: 12px 24px;
+        background: #ffffff;
+        border: 3px solid #38bdf8;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 50px;
+        cursor: grab;
+        touch-action: none;
+        box-shadow: 0 8px 18px rgba(56, 189, 248, 0.25);
+        transition: transform 0.15s, box-shadow 0.15s;
+      }
+      .unified-group-block:active {
+        cursor: grabbing;
+      }
+      .unified-group-block.is-selected {
+        border-color: #0284c7;
+        box-shadow: 0 0 0 4px #0284c7, 0 8px 22px rgba(2, 132, 199, 0.4);
+        animation: bobSelect 0.8s ease-in-out infinite alternate;
+      }
+
+      /* GAME TYPE 4: CHỌN NHÓM ĐÚNG VỚI SỐ */
+      .t4-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+      }
+      .t4-center-digit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .big-center-number {
+        font-size: 80px;
+        font-weight: 900;
+        width: 120px;
+        height: 120px;
+        border-radius: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        animation: pulseBigNum 2s infinite ease-in-out;
+      }
+      @keyframes pulseBigNum {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      .big-center-label {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1e3a8a;
+      }
+
+      .t4-options-row {
+        display: flex;
+        gap: 24px;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: 860px;
+      }
+      .t4-choice-card {
+        flex: 1;
+        min-width: 160px;
+        max-width: 250px;
+        min-height: 140px;
+        background: #ffffff;
+        border: 3px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 48px;
+        cursor: pointer;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+        touch-action: manipulation;
+      }
+      .t4-choice-card:hover {
+        transform: translateY(-4px) scale(1.03);
+        border-color: #38bdf8;
+        box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
+      }
+      .t4-choice-card:active {
+        transform: scale(0.96);
+      }
+      .t4-choice-card.correct-glow {
+        border-color: #10b981;
+        background: #ecfdf5;
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+        animation: winGlow 0.8s ease-in-out infinite alternate;
+      }
+      .t4-choice-card.wrong-shake {
+        animation: shakeWrong 0.5s ease-in-out;
+        border-color: #f87171;
+        background: #fef2f2;
+      }
+
+      @keyframes winGlow {
+        from { transform: scale(1.02); }
+        to { transform: scale(1.08); }
+      }
+      @keyframes shakeWrong {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-10px); }
+        40%, 80% { transform: translateX(10px); }
+      }
+
+      /* GAME TYPE 5: ĐIỀN ĐỦ SỐ LƯỢNG */
+      .t5-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .t5-target-panel {
+        width: 100%;
+        max-width: 560px;
+        min-height: 170px;
+        background: #f0fdf4;
+        border: 3px dashed #34d399;
+        border-radius: 28px;
+        padding: 16px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.2s;
+      }
+      .t5-target-panel.drop-hover {
+        border-style: solid;
+        border-color: #059669;
+        background: #dcfce7;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+      }
+      .t5-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .t5-slot {
+        width: 100%;
+        min-height: 80px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* GAME TYPE 6: NỐI TƯƠNG ỨNG */
+      .t6-container {
+        width: 100%;
+        max-width: 820px;
+        min-height: 280px;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 40px;
+      }
+      .t6-svg-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .t6-column {
+        display: flex;
+        flex-direction: column;
+        gap: 36px;
+        z-index: 3;
+      }
+      .t6-node {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        background: #ffffff;
+        border: 3px solid #cbd5e1;
+        border-radius: 22px;
+        cursor: pointer;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+        transition: all 0.15s ease;
+        touch-action: none;
+      }
+      .t6-node:hover {
+        border-color: #38bdf8;
+        transform: scale(1.04);
+      }
+      .t6-node.is-active {
+        border-color: #0284c7;
+        box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.35);
+        background: #e0f2fe;
+      }
+      .t6-node.is-matched {
+        border-color: #10b981;
+        background: #ecfdf5;
+      }
+      .t6-digit-node {
+        font-size: 42px;
+        font-weight: 900;
+        gap: 14px;
+      }
+      .t6-group-node {
+        font-size: 46px;
+        gap: 14px;
+      }
+      .connect-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #0284c7;
+        border: 3px solid #ffffff;
+        box-shadow: 0 0 0 2px #0284c7;
+      }
+
+      /* 3. CONGRATS SCREEN */
+      #congrats-screen {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        position: relative;
+      }
+      #confetti-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .congrats-content {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .congrats-stars-row {
+        font-size: 42px;
+        margin-bottom: 12px;
+        animation: starPop 1.2s ease-in-out infinite alternate;
+      }
+      @keyframes starPop {
+        0% { transform: scale(0.9); }
+        100% { transform: scale(1.15); }
+      }
+      .congrats-title {
+        font-size: 46px;
+        font-weight: 900;
+        color: #1e3a8a;
+        margin-bottom: 8px;
+      }
+      .congrats-sub {
+        font-size: 22px;
+        font-weight: 700;
+        color: #059669;
+        margin-bottom: 24px;
+      }
+      .final-score-card {
+        background: #ffffff;
+        border: 3px solid #fbbf24;
+        border-radius: 28px;
+        padding: 16px 36px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 28px;
+        font-weight: 900;
+        color: #b45309;
+        box-shadow: 0 10px 25px rgba(251, 191, 36, 0.3);
+        margin-bottom: 30px;
+      }
+      .replay-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 800;
+        padding: 14px 44px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 6px 0 #1e40af, 0 14px 25px rgba(59, 130, 246, 0.4);
+        transition: transform 0.1s, box-shadow 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .replay-btn:hover {
+        transform: translateY(-2px);
+      }
+      .replay-btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 #1e40af;
+      }
+
+      /* Floating Drag Ghost Element */
+      #drag-ghost {
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.95;
+        transform: translate(-50%, -50%) scale(1.12);
+        box-shadow: 0 16px 32px rgba(0,0,0,0.25);
+        display: none;
+        transition: none;
+      }
+
+      /* Floating Feedback Toast */
+      .toast-msg {
+        position: absolute;
+        top: 85px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        background: #ffffff;
+        padding: 12px 28px;
+        border-radius: 999px;
+        font-size: 20px;
+        font-weight: 800;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 100;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .toast-msg.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .toast-success {
+        border: 3px solid #10b981;
+        color: #065f46;
+      }
+      .toast-retry {
+        border: 3px solid #f59e0b;
+        color: #92400e;
+      }
+
+      /* Shake animation for errors */
+      .shake-box {
+        animation: shakeElement 0.5s ease-in-out;
+      }
+      @keyframes shakeElement {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-8px); }
+        40%, 80% { transform: translateX(8px); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Main 16:9 Game Application Container -->
+    <div id="game-app">
+      <!-- Background decorative clouds & stars -->
+      <div class="bg-decor cloud-1">☁️</div>
+      <div class="bg-decor cloud-2">☁️</div>
+      <div class="bg-decor rainbow">🌈</div>
+
+      <!-- Top Header Bar -->
+      <header class="top-bar">
+        <div class="game-title-group">
+          <div class="app-logo-badge">🤖</div>
+          <div>
+            <h1 class="game-heading">BÉ XẾP ĐÚNG SỐ LƯỢNG</h1>
+            <div class="game-subheading">Sắp xếp tương ứng số lượng 1 và 2</div>
+          </div>
+        </div>
+
+        <div class="stats-group">
+          <div class="stat-item">
+            <span class="stat-star">⭐</span>
+            <span id="star-count">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-step" id="question-indicator">Câu 1/12</span>
+          </div>
+          <div class="progress-container" title="Tiến độ bài học">
+            <div class="progress-fill" id="progress-bar"></div>
+          </div>
+        </div>
+
+        <div class="ctrl-buttons">
+          <button class="icon-btn" id="btn-sound" title="Bật/Tắt âm thanh">🔊</button>
+          <button class="icon-btn" id="btn-fullscreen" title="Toàn màn hình">⛶</button>
+        </div>
+      </header>
+
+      <!-- Feedback Toast Banner -->
+      <div id="toast-banner" class="toast-msg">
+        <span id="toast-icon">⭐</span>
+        <span id="toast-text">Chính xác! Giỏi quá!</span>
+      </div>
+
+      <!-- Ghost element used for smooth pointer dragging -->
+      <div id="drag-ghost"></div>
+
+      <!-- SCREEN 1: START WELCOME SCREEN -->
+      <div id="start-screen" class="screen-container">
+        <div class="welcome-robot-wrapper">
+          <!-- Cute Friendly SVG Preschool Robot -->
+          <svg class="robot-avatar" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="70" cy="18" r="8" fill="#F59E0B" />
+            <line x1="70" y1="26" x2="70" y2="40" stroke="#0891B2" stroke-width="4" stroke-linecap="round" />
+            <!-- Head -->
+            <rect x="35" y="40" width="70" height="52" rx="18" fill="#06B6D4" stroke="#0891B2" stroke-width="4" />
+            <rect x="43" y="48" width="54" height="36" rx="12" fill="#E0F2FE" />
+            <!-- Eyes -->
+            <circle cx="56" cy="64" r="6" fill="#0284C7" />
+            <circle cx="84" cy="64" r="6" fill="#0284C7" />
+            <circle cx="58" cy="62" r="2" fill="#FFFFFF" />
+            <circle cx="86" cy="62" r="2" fill="#FFFFFF" />
+            <!-- Happy Smile -->
+            <path d="M60 74 Q70 82 80 74" stroke="#0891B2" stroke-width="3" stroke-linecap="round" fill="none" />
+            <!-- Cheeks -->
+            <circle cx="49" cy="72" r="4" fill="#FDA4AF" opacity="0.8" />
+            <circle cx="91" cy="72" r="4" fill="#FDA4AF" opacity="0.8" />
+            <!-- Body -->
+            <rect x="42" y="96" width="56" height="38" rx="14" fill="#0891B2" />
+            <circle cx="70" cy="115" r="10" fill="#FCD34D" />
+            <text x="70" y="119" font-size="12" font-weight="bold" fill="#B45309" text-anchor="middle">★</text>
+            <!-- Waving Arm -->
+            <path d="M42 104 Q25 90 28 75" stroke="#06B6D4" stroke-width="6" stroke-linecap="round" fill="none" />
+            <circle cx="28" cy="75" r="6" fill="#F59E0B" />
+            <!-- Other Arm -->
+            <path d="M98 104 Q115 110 114 122" stroke="#06B6D4" stroke-width="6" stroke-linecap="round" fill="none" />
+            <circle cx="114" cy="122" r="6" fill="#F59E0B" />
+          </svg>
+        </div>
+
+        <div class="speech-bubble-intro">
+          “Chào con! Hãy cùng cô Robot BiBi sắp xếp đồ vật đúng với số 1 và số 2 nhé!”
+        </div>
+
+        <h2 class="main-title">BÉ XẾP ĐÚNG SỐ LƯỢNG</h2>
+        <div class="sub-title">Sắp xếp tương ứng số lượng 1 và 2</div>
+
+        <button class="big-start-btn" id="btn-start-game">
+          <span>▶</span> BẮT ĐẦU CHƠI
+        </button>
+      </div>
+
+      <!-- SCREEN 2: GAMEPLAY ACTIVE STAGE -->
+      <div id="game-screen" class="screen-container hidden">
+        <!-- Robot Guidance Header -->
+        <div class="guidance-box">
+          <svg class="mini-robot" id="mini-robot-icon" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="14" r="6" fill="#F59E0B" />
+            <line x1="50" y1="20" x2="50" y2="30" stroke="#0891B2" stroke-width="3" />
+            <rect x="25" y="30" width="50" height="40" rx="12" fill="#06B6D4" stroke="#0891B2" stroke-width="3" />
+            <rect x="32" y="36" width="36" height="26" rx="8" fill="#E0F2FE" />
+            <circle cx="42" cy="48" r="4" fill="#0284C7" />
+            <circle cx="58" cy="48" r="4" fill="#0284C7" />
+            <path d="M44 55 Q50 60 56 55" stroke="#0891B2" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            <rect x="32" y="74" width="36" height="22" rx="8" fill="#0891B2" />
+            <circle cx="50" cy="85" r="5" fill="#FCD34D" />
+          </svg>
+          <div class="robot-speech" id="robot-speech-text">
+            Con hãy kéo 1 đồ vật vào số 1, và 2 đồ vật vào số 2 nhé!
+          </div>
+          <button class="voice-speak-btn" id="btn-read-aloud" title="Nghe lại giọng cô đọc">
+            <span>🗣️</span> Đọc lại
+          </button>
+        </div>
+
+        <!-- Dynamic Game Stage Area (rendered by JavaScript per question type) -->
+        <div class="game-stage" id="game-stage">
+          <!-- Dynamic Content Injected Here -->
+        </div>
+
+        <!-- Action Bar (Kiểm tra / Làm lại) -->
+        <div class="action-bar" id="action-bar">
+          <button class="check-btn" id="btn-check-answer">
+            <span>✅</span> KIỂM TRA
+          </button>
+          <button class="reset-btn" id="btn-reset-current" title="Xếp lại câu này">
+            <span>↺</span> Làm lại
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: COMPLETION / CONGRATS -->
+      <div id="congrats-screen" class="screen-container hidden">
+        <canvas id="confetti-canvas"></canvas>
+        <div class="congrats-content">
+          <div class="congrats-stars-row">🎉 ⭐ 🌟 ⭐ 🎉</div>
+          <h2 class="congrats-title">CHÚC MỪNG BÉ!</h2>
+          <p class="congrats-sub">Bé đã sắp xếp đúng xuất sắc số lượng 1 và 2!</p>
+
+          <div class="final-score-card">
+            <span>⭐ Bé đạt:</span>
+            <span id="final-star-display">12 / 12 ⭐</span>
+          </div>
+
+          <button class="replay-btn" id="btn-replay-game">
+            <span>🔄</span> CHƠI LẠI
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PURE JAVASCRIPT GAME ENGINE -->
+    <script>
+      (function () {
+        'use strict';
+
+        /* -------------------------------------------------------------
+         * 1. AUDIO & SPEECH SYNTHESIS ENGINE (Web Audio API + TTS)
+         * ------------------------------------------------------------- */
+        let audioCtx = null;
+        let isSoundEnabled = true;
+
+        function getAudioContext() {
+          if (!audioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+              audioCtx = new AudioContextClass();
+            }
+          }
+          if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+          return audioCtx;
+        }
+
+        // Play synthetic cheerful sound effects (works completely offline)
+        function playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.2, delay = 0) {
+          if (!isSoundEnabled) return;
+          try {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            setTimeout(() => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = type;
+              osc.frequency.setValueAtTime(freq, ctx.currentTime);
+              gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start();
+              osc.stop(ctx.currentTime + duration);
+            }, delay * 1000);
+          } catch (e) {
+            console.warn(e);
+          }
+        }
+
+        function soundPop() {
+          playTone(440, 'sine', 0.08, 0.18);
+        }
+        function soundDrop() {
+          playTone(587.33, 'triangle', 0.12, 0.2);
+        }
+        function soundSuccess() {
+          playTone(523.25, 'triangle', 0.15, 0.25, 0);      // C5
+          playTone(659.25, 'triangle', 0.15, 0.25, 0.1);    // E5
+          playTone(783.99, 'triangle', 0.18, 0.25, 0.2);    // G5
+          playTone(1046.50, 'sine', 0.35, 0.3, 0.3);        // C6
+        }
+        function soundRetry() {
+          playTone(330, 'sine', 0.18, 0.15, 0);
+          playTone(293, 'sine', 0.25, 0.15, 0.15);
+        }
+        function soundFanfare() {
+          const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+          notes.forEach((n, i) => {
+            playTone(n, 'triangle', 0.25, 0.25, i * 0.12);
+          });
+        }
+
+        // Web Speech API Voice synthesizer (Vietnamese)
+        let viVoice = null;
+        function loadVoices() {
+          if ('speechSynthesis' in window) {
+            const voices = window.speechSynthesis.getVoices();
+            viVoice = voices.find(v => v.lang && (v.lang.includes('vi') || v.lang.includes('VN')));
+          }
+        }
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.onvoiceschanged = loadVoices;
+          loadVoices();
+        }
+
+        function speakVietnamese(text) {
+          if (!isSoundEnabled || !('speechSynthesis' in window)) return;
+          try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'vi-VN';
+            utterance.rate = 0.9;  // Slow & clear for preschoolers
+            utterance.pitch = 1.15; // Cheerful friendly tone
+            if (viVoice) utterance.voice = viVoice;
+            window.speechSynthesis.speak(utterance);
+          } catch (e) {
+            console.warn(e);
+          }
+        }
+
+        /* -------------------------------------------------------------
+         * 2. GAME DATA (12 QUESTIONS - VARIED TYPES & OBJECTS)
+         * ------------------------------------------------------------- */
+        const QUESTIONS = [
+          // Câu 1: Trò chơi 1 - Xếp 3 quả táo vào số 1 và số 2
+          {
+            type: 1,
+            itemEmoji: '🍎',
+            itemName: 'quả táo',
+            titleText: 'Con hãy kéo 1 quả táo vào số 1, và 2 quả táo vào số 2 nhé!',
+            speechText: 'Con hãy kéo một quả táo vào ô số một, và hai quả táo vào ô số hai nhé!'
+          },
+          // Câu 2: Trò chơi 2 - Kéo số đến nhóm quả dâu
+          {
+            type: 2,
+            itemEmoji: '🍓',
+            itemName: 'quả dâu',
+            titleText: 'Con hãy kéo số 1 và số 2 đến nhóm quả dâu tương ứng nhé!',
+            speechText: 'Con hãy kéo thẻ số đến đúng nhóm quả dâu nhé!'
+          },
+          // Câu 3: Trò chơi 3 - Kéo nhóm gà con đến số tương ứng
+          {
+            type: 3,
+            itemEmoji: '🐥',
+            itemName: 'chú gà',
+            titleText: 'Con hãy kéo nhóm có 1 chú gà vào số 1, nhóm 2 chú gà vào số 2 nhé!',
+            speechText: 'Con hãy kéo nhóm một chú gà vào số một, nhóm hai chú gà vào số hai nhé!'
+          },
+          // Câu 4: Trò chơi 4 - Chạm chọn nhóm đúng với số 2
+          {
+            type: 4,
+            targetNum: 2,
+            itemEmoji: '🐰',
+            itemName: 'chú thỏ',
+            titleText: 'Đâu là nhóm có đúng 2 chú thỏ? Con hãy chạm vào nhóm đó nhé!',
+            speechText: 'Đâu là nhóm có hai chú thỏ? Con hãy chạm vào nhóm đúng nhé!'
+          },
+          // Câu 5: Trò chơi 5 - Điền đủ số lượng: Số 2 đã có 1 quả cam, kéo thêm 1 quả
+          {
+            type: 5,
+            targetNum: 2,
+            initialCount: 1,
+            itemEmoji: '🍊',
+            itemName: 'quả cam',
+            titleText: 'Số 2 cần có 2 quả cam! Trong ô đã có 1 quả rồi, con hãy thêm cho đủ nhé!',
+            speechText: 'Số hai cần có hai quả cam. Trong ô đã có một quả, con hãy thêm một quả cho đủ nhé!'
+          },
+          // Câu 6: Trò chơi 6 - Nối tương ứng số 1 và 2 với nhóm bông hoa
+          {
+            type: 6,
+            itemEmoji: '🌸',
+            itemName: 'bông hoa',
+            titleText: 'Con hãy nối số 1 và số 2 với nhóm bông hoa tương ứng nhé!',
+            speechText: 'Con hãy nối số một và số hai với nhóm bông hoa tương ứng nhé!'
+          },
+          // Câu 7: Trò chơi 1 - Xếp quả bóng vào số 1 và số 2
+          {
+            type: 1,
+            itemEmoji: '⚽',
+            itemName: 'quả bóng',
+            titleText: 'Con hãy kéo 1 quả bóng vào số 1, và 2 quả bóng vào số 2 nhé!',
+            speechText: 'Con hãy kéo một quả bóng vào số một, và hai quả bóng vào số hai nhé!'
+          },
+          // Câu 8: Trò chơi 2 - Kéo số 1 và 2 đến nhóm ô tô
+          {
+            type: 2,
+            itemEmoji: '🚗',
+            itemName: 'ô tô',
+            titleText: 'Con hãy kéo số 1 và số 2 đến nhóm ô tô tương ứng nhé!',
+            speechText: 'Con hãy kéo số một và số hai đến đúng nhóm ô tô nhé!'
+          },
+          // Câu 9: Trò chơi 3 - Kéo nhóm gấu bông đến số 1 và số 2
+          {
+            type: 3,
+            itemEmoji: '🧸',
+            itemName: 'chú gấu',
+            titleText: 'Con hãy kéo nhóm 1 chú gấu vào số 1, nhóm 2 chú gấu vào số 2 nhé!',
+            speechText: 'Con hãy kéo nhóm một chú gấu vào số một, nhóm hai chú gấu vào số hai nhé!'
+          },
+          // Câu 10: Trò chơi 4 - Chọn nhóm có số lượng 1 cây kem
+          {
+            type: 4,
+            targetNum: 1,
+            itemEmoji: '🍦',
+            itemName: 'cây kem',
+            titleText: 'Đâu là nhóm có đúng 1 cây kem? Con hãy chạm vào nhóm đó nhé!',
+            speechText: 'Đâu là nhóm có đúng một cây kem? Con hãy chạm vào nhóm đó nhé!'
+          },
+          // Câu 11: Trò chơi 5 - Điền đủ số lượng: Số 1 đang trống (0 bóng), kéo vào đúng 1 bóng
+          {
+            type: 5,
+            targetNum: 1,
+            initialCount: 0,
+            itemEmoji: '🎈',
+            itemName: 'bóng bay',
+            titleText: 'Số 1 cần có 1 quả bóng bay! Con hãy kéo vào ô cho đủ nhé!',
+            speechText: 'Số một cần có một quả bóng bay. Con hãy kéo một quả bóng vào ô nhé!'
+          },
+          // Câu 12: Trò chơi 6 - Nối tương ứng số 1 và 2 với nhóm ngôi sao
+          {
+            type: 6,
+            itemEmoji: '⭐',
+            itemName: 'ngôi sao',
+            titleText: 'Con hãy nối số 1 và số 2 với nhóm ngôi sao tương ứng nhé!',
+            speechText: 'Con hãy nối số một và số hai với nhóm ngôi sao tương ứng nhé!'
+          }
+        ];
+
+        const PRAISE_LIST = [
+          'Chính xác! Bé giỏi quá! 🌟',
+          'Tuyệt vời! Bé làm đúng rồi! 👏',
+          'Xuất sắc lắm bé ơi! 🎉',
+          'Đúng rồi! Bé rất thông minh! 💖',
+          'Hoan hô! Bé làm chuẩn rồi! ⭐'
+        ];
+
+        /* -------------------------------------------------------------
+         * 3. GAME STATE
+         * ------------------------------------------------------------- */
+        let currentQuestionIdx = 0;
+        let totalStars = 0;
+        let answeredQuestions = new Set();
+        let selectedItemForTap = null; // Tap-to-select fallback mechanism
+
+        // DOM elements
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const congratsScreen = document.getElementById('congrats-screen');
+        const gameStage = document.getElementById('game-stage');
+        const robotSpeechText = document.getElementById('robot-speech-text');
+        const starCountEl = document.getElementById('star-count');
+        const questionIndicatorEl = document.getElementById('question-indicator');
+        const progressBarEl = document.getElementById('progress-bar');
+        const toastBanner = document.getElementById('toast-banner');
+        const toastText = document.getElementById('toast-text');
+        const toastIcon = document.getElementById('toast-icon');
+        const dragGhost = document.getElementById('drag-ghost');
+        const actionBar = document.getElementById('action-bar');
+        const btnCheck = document.getElementById('btn-check-answer');
+        const btnReset = document.getElementById('btn-reset-current');
+        const btnSound = document.getElementById('btn-sound');
+        const btnFullscreen = document.getElementById('btn-fullscreen');
+        const btnStart = document.getElementById('btn-start-game');
+        const btnReplay = document.getElementById('btn-replay-game');
+        const btnReadAloud = document.getElementById('btn-read-aloud');
+        const miniRobotIcon = document.getElementById('mini-robot-icon');
+
+        /* -------------------------------------------------------------
+         * 4. GENERAL HELPERS & UI
+         * ------------------------------------------------------------- */
+        function updateStatsUI() {
+          starCountEl.textContent = totalStars;
+          questionIndicatorEl.textContent = `Câu ${currentQuestionIdx + 1}/12`;
+          const pct = ((currentQuestionIdx) / 12) * 100;
+          progressBarEl.style.width = `${pct}%`;
+        }
+
+        let toastTimeout = null;
+        function showToast(message, isSuccess = true) {
+          clearTimeout(toastTimeout);
+          toastText.textContent = message;
+          toastIcon.textContent = isSuccess ? '⭐' : '💡';
+          toastBanner.className = `toast-msg show ${isSuccess ? 'toast-success' : 'toast-retry'}`;
+          toastTimeout = setTimeout(() => {
+            toastBanner.classList.remove('show');
+          }, 1800);
+        }
+
+        // Fullscreen API toggle
+        btnFullscreen.addEventListener('click', () => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => console.log(err));
+          } else {
+            if (document.exitFullscreen) {
+              document.exitFullscreen();
+            }
+          }
+        });
+
+        // Sound toggle
+        btnSound.addEventListener('click', () => {
+          isSoundEnabled = !isSoundEnabled;
+          btnSound.textContent = isSoundEnabled ? '🔊' : '🔇';
+          if (!isSoundEnabled && 'speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
+        });
+
+        // Speech button & Robot Click
+        btnReadAloud.addEventListener('click', () => {
+          const q = QUESTIONS[currentQuestionIdx];
+          speakVietnamese(q.speechText || q.titleText);
+        });
+        miniRobotIcon.addEventListener('click', () => {
+          soundPop();
+          miniRobotIcon.style.transform = 'scale(1.2) rotate(15deg)';
+          setTimeout(() => miniRobotIcon.style.transform = '', 300);
+          const q = QUESTIONS[currentQuestionIdx];
+          speakVietnamese(q.speechText || q.titleText);
+        });
+
+        // Start button
+        btnStart.addEventListener('click', () => {
+          getAudioContext();
+          soundPop();
+          startScreen.classList.add('hidden');
+          gameScreen.classList.remove('hidden');
+          currentQuestionIdx = 0;
+          totalStars = 0;
+          answeredQuestions.clear();
+          loadQuestion(currentQuestionIdx);
+        });
+
+        // Replay button
+        btnReplay.addEventListener('click', () => {
+          congratsScreen.classList.add('hidden');
+          gameScreen.classList.remove('hidden');
+          currentQuestionIdx = 0;
+          totalStars = 0;
+          answeredQuestions.clear();
+          loadQuestion(0);
+        });
+
+        /* -------------------------------------------------------------
+         * 5. UNIVERSAL POINTER DRAG & TAP CONTROLLER
+         * ------------------------------------------------------------- */
+        let activeDrag = null;
+
+        function makeDraggable(element, options) {
+          element.addEventListener('pointerdown', (e) => {
+            // Only primary button/touch
+            if (e.button !== 0) return;
+            e.preventDefault();
+
+            getAudioContext();
+            soundPop();
+
+            const startX = e.clientX;
+            const startY = e.clientY;
+            let hasMoved = false;
+
+            // Handle Tap selection logic
+            if (selectedItemForTap === element) {
+              // Deselect
+              element.classList.remove('is-selected');
+              selectedItemForTap = null;
+              return;
+            }
+
+            // Pointer capture
+            element.setPointerCapture(e.pointerId);
+
+            activeDrag = {
+              element: element,
+              type: options.type,
+              payload: options.payload || {},
+              onDrop: options.onDrop,
+              onTap: options.onTap,
+              startX,
+              startY,
+              hasMoved: false
+            };
+
+            const onPointerMove = (moveEvt) => {
+              const dx = moveEvt.clientX - startX;
+              const dy = moveEvt.clientY - startY;
+              if (!hasMoved && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+                hasMoved = true;
+                if (activeDrag) activeDrag.hasMoved = true;
+
+                // Deselect tapped items
+                if (selectedItemForTap) {
+                  selectedItemForTap.classList.remove('is-selected');
+                  selectedItemForTap = null;
+                }
+
+                // Show ghost element
+                dragGhost.style.display = 'block';
+                dragGhost.innerHTML = element.innerHTML;
+                dragGhost.className = element.className;
+                element.style.opacity = '0.35';
+              }
+
+              if (hasMoved) {
+                dragGhost.style.left = `${moveEvt.clientX}px`;
+                dragGhost.style.top = `${moveEvt.clientY}px`;
+
+                // Highlight hovered dropzones
+                highlightHoverZones(moveEvt.clientX, moveEvt.clientY);
+              }
+            };
+
+            const onPointerUp = (upEvt) => {
+              element.removeEventListener('pointermove', onPointerMove);
+              element.removeEventListener('pointerup', onPointerUp);
+              element.removeEventListener('pointercancel', onPointerUp);
+
+              try {
+                element.releasePointerCapture(upEvt.pointerId);
+              } catch (err) {}
+
+              dragGhost.style.display = 'none';
+              element.style.opacity = '1';
+              clearHoverZones();
+
+              if (!hasMoved) {
+                // This was a TAP!
+                handleTapSelect(element, options);
+              } else {
+                // This was a DRAG & DROP!
+                handleDrop(upEvt.clientX, upEvt.clientY, options);
+              }
+
+              activeDrag = null;
+            };
+
+            element.addEventListener('pointermove', onPointerMove);
+            element.addEventListener('pointerup', onPointerUp);
+            element.addEventListener('pointercancel', onPointerUp);
+          });
+        }
+
+        function highlightHoverZones(x, y) {
+          clearHoverZones();
+          const target = document.elementFromPoint(x, y);
+          if (!target) return;
+          const zone = target.closest('.drop-zone');
+          if (zone) {
+            zone.classList.add('drop-hover');
+          }
+        }
+
+        function clearHoverZones() {
+          document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drop-hover'));
+        }
+
+        function handleTapSelect(element, options) {
+          if (selectedItemForTap) {
+            selectedItemForTap.classList.remove('is-selected');
+          }
+          selectedItemForTap = element;
+          element.classList.add('is-selected');
+          if (options.onTap) options.onTap();
+        }
+
+        function handleDrop(x, y, options) {
+          const target = document.elementFromPoint(x, y);
+          if (!target) return;
+          const zone = target.closest('.drop-zone');
+          if (zone && options.onDrop) {
+            options.onDrop(zone);
+          }
+        }
+
+        // Tap-to-destination listener on dropzones
+        function registerDropZoneTap(zoneElement, onReceiveItem) {
+          zoneElement.addEventListener('pointerdown', (e) => {
+            if (e.target.closest('.drag-item') || e.target.closest('.drag-number-card') || e.target.closest('.unified-group-block')) {
+              // Clicking inside item itself, handled by draggable
+              return;
+            }
+            if (selectedItemForTap) {
+              soundDrop();
+              const item = selectedItemForTap;
+              item.classList.remove('is-selected');
+              selectedItemForTap = null;
+              onReceiveItem(item, zoneElement);
+            }
+          });
+        }
+
+        /* -------------------------------------------------------------
+         * 6. RENDER EACH QUESTION TYPE
+         * ------------------------------------------------------------- */
+        function loadQuestion(index) {
+          if (index >= QUESTIONS.length) {
+            showCompletionScreen();
+            return;
+          }
+
+          selectedItemForTap = null;
+          updateStatsUI();
+
+          const q = QUESTIONS[index];
+          robotSpeechText.textContent = q.titleText;
+          speakVietnamese(q.speechText || q.titleText);
+
+          // Type 4 has direct choice, does not require separate Check button
+          if (q.type === 4) {
+            actionBar.classList.add('hidden');
+          } else {
+            actionBar.classList.remove('hidden');
+          }
+
+          gameStage.innerHTML = '';
+
+          switch (q.type) {
+            case 1:
+              renderType1(q);
+              break;
+            case 2:
+              renderType2(q);
+              break;
+            case 3:
+              renderType3(q);
+              break;
+            case 4:
+              renderType4(q);
+              break;
+            case 5:
+              renderType5(q);
+              break;
+            case 6:
+              renderType6(q);
+              break;
+          }
+        }
+
+        /* -------------------------
+         * TYPE 1: XẾP ĐỒ VẬT VÀO SỐ 1 VÀ SỐ 2
+         * ------------------------- */
+        function renderType1(q) {
+          gameStage.innerHTML = `
+            <div class="t1-container">
+              <div class="t1-boxes-row">
+                <!-- VÙNG SỐ 1 -->
+                <div class="target-box box-1-zone drop-zone" data-box-id="1">
+                  <div class="box-header">
+                    <div class="digit-badge digit-1">1</div>
+                    <div>
+                      <div class="box-name">SỐ 1</div>
+                      <div class="box-count-tag" id="count-box-1">0 đồ vật</div>
+                    </div>
+                  </div>
+                  <div class="box-items-slot" id="slot-box-1"></div>
+                </div>
+
+                <!-- VÙNG SỐ 2 -->
+                <div class="target-box box-2-zone drop-zone" data-box-id="2">
+                  <div class="box-header">
+                    <div class="digit-badge digit-2">2</div>
+                    <div>
+                      <div class="box-name">SỐ 2</div>
+                      <div class="box-count-tag" id="count-box-2">0 đồ vật</div>
+                    </div>
+                  </div>
+                  <div class="box-items-slot" id="slot-box-2"></div>
+                </div>
+              </div>
+
+              <!-- KHAY ĐỒ VẬT BAN ĐẦU -->
+              <div class="items-tray drop-zone" data-box-id="tray" id="items-tray">
+                <span class="tray-title">Khay đồ vật:</span>
+                <!-- 3 identical items -->
+                <div class="drag-item" data-item-id="item-1">${q.itemEmoji}</div>
+                <div class="drag-item" data-item-id="item-2">${q.itemEmoji}</div>
+                <div class="drag-item" data-item-id="item-3">${q.itemEmoji}</div>
+              </div>
+            </div>
+          `;
+
+          const slot1 = document.getElementById('slot-box-1');
+          const slot2 = document.getElementById('slot-box-2');
+          const tray = document.getElementById('items-tray');
+          const count1 = document.getElementById('count-box-1');
+          const count2 = document.getElementById('count-box-2');
+
+          function updateCounts() {
+            count1.textContent = `${slot1.children.length} đồ vật`;
+            count2.textContent = `${slot2.children.length} đồ vật`;
+          }
+
+          function moveItemToZone(item, zone) {
+            soundDrop();
+            const targetSlot = zone.dataset.boxId === '1' ? slot1 :
+                               zone.dataset.boxId === '2' ? slot2 : tray;
+            targetSlot.appendChild(item);
+            updateCounts();
+          }
+
+          // Setup dropzones
+          document.querySelectorAll('.t1-container .drop-zone').forEach(zone => {
+            registerDropZoneTap(zone, (item, z) => moveItemToZone(item, z));
+          });
+
+          // Setup draggables
+          document.querySelectorAll('.t1-container .drag-item').forEach(item => {
+            makeDraggable(item, {
+              type: 't1-item',
+              onDrop: (zone) => moveItemToZone(item, zone)
+            });
+          });
+
+          // Reset button handler
+          btnReset.onclick = () => {
+            soundPop();
+            document.querySelectorAll('.t1-container .drag-item').forEach(item => {
+              tray.appendChild(item);
+            });
+            updateCounts();
+          };
+
+          // Check button handler
+          btnCheck.onclick = () => {
+            const num1 = slot1.children.length;
+            const num2 = slot2.children.length;
+
+            if (num1 === 1 && num2 === 2) {
+              handleCorrect();
+            } else {
+              handleIncorrect([
+                num1 !== 1 ? document.querySelector('.box-1-zone') : null,
+                num2 !== 2 ? document.querySelector('.box-2-zone') : null
+              ]);
+            }
+          };
+        }
+
+        /* -------------------------
+         * TYPE 2: KÉO SỐ ĐẾN NHÓM ĐỒ VẬT
+         * ------------------------- */
+        function renderType2(q) {
+          // Randomize order of group 1 and group 2
+          const isGroup1First = Math.random() > 0.5;
+          const leftTarget = isGroup1First ? 1 : 2;
+          const rightTarget = isGroup1First ? 2 : 1;
+
+          gameStage.innerHTML = `
+            <div class="t2-container">
+              <div class="t2-groups-row">
+                <!-- NHÓM BÊN TRÁI -->
+                <div class="group-card-t2">
+                  <div class="group-items-display">
+                    ${leftTarget === 1 ? q.itemEmoji : `${q.itemEmoji} ${q.itemEmoji}`}
+                  </div>
+                  <div class="number-target-slot drop-zone" data-group-target="${leftTarget}" id="t2-slot-left">
+                    <span class="slot-placeholder">Kéo số vào đây</span>
+                  </div>
+                </div>
+
+                <!-- NHÓM BÊN PHẢI -->
+                <div class="group-card-t2">
+                  <div class="group-items-display">
+                    ${rightTarget === 1 ? q.itemEmoji : `${q.itemEmoji} ${q.itemEmoji}`}
+                  </div>
+                  <div class="number-target-slot drop-zone" data-group-target="${rightTarget}" id="t2-slot-right">
+                    <span class="slot-placeholder">Kéo số vào đây</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- KHAY CHỨA 2 THẺ SỐ 1 VÀ 2 -->
+              <div class="numbers-tray drop-zone" data-group-target="tray" id="t2-numbers-tray">
+                <div class="drag-number-card digit-1" data-digit="1">1</div>
+                <div class="drag-number-card digit-2" data-digit="2">2</div>
+              </div>
+            </div>
+          `;
+
+          const slotLeft = document.getElementById('t2-slot-left');
+          const slotRight = document.getElementById('t2-slot-right');
+          const numbersTray = document.getElementById('t2-numbers-tray');
+
+          function moveDigitToZone(digitCard, zone) {
+            soundDrop();
+            if (zone.dataset.groupTarget === 'tray') {
+              numbersTray.appendChild(digitCard);
+            } else {
+              // If slot already has a card, send existing back to tray
+              const existing = zone.querySelector('.drag-number-card');
+              if (existing && existing !== digitCard) {
+                numbersTray.appendChild(existing);
+              }
+              const ph = zone.querySelector('.slot-placeholder');
+              if (ph) ph.style.display = 'none';
+              zone.appendChild(digitCard);
+            }
+
+            // Restore placeholder if empty
+            [slotLeft, slotRight].forEach(s => {
+              const card = s.querySelector('.drag-number-card');
+              const ph = s.querySelector('.slot-placeholder');
+              if (ph) ph.style.display = card ? 'none' : 'block';
+            });
+          }
+
+          document.querySelectorAll('.t2-container .drop-zone').forEach(zone => {
+            registerDropZoneTap(zone, (card, z) => moveDigitToZone(card, z));
+          });
+
+          document.querySelectorAll('.t2-container .drag-number-card').forEach(card => {
+            makeDraggable(card, {
+              type: 't2-card',
+              onDrop: (zone) => moveDigitToZone(card, zone)
+            });
+          });
+
+          btnReset.onclick = () => {
+            soundPop();
+            document.querySelectorAll('.t2-container .drag-number-card').forEach(c => numbersTray.appendChild(c));
+            [slotLeft, slotRight].forEach(s => {
+              const ph = s.querySelector('.slot-placeholder');
+              if (ph) ph.style.display = 'block';
+            });
+          };
+
+          btnCheck.onclick = () => {
+            const cardLeft = slotLeft.querySelector('.drag-number-card');
+            const cardRight = slotRight.querySelector('.drag-number-card');
+
+            const valLeft = cardLeft ? parseInt(cardLeft.dataset.digit) : null;
+            const valRight = cardRight ? parseInt(cardRight.dataset.digit) : null;
+
+            if (valLeft === leftTarget && valRight === rightTarget) {
+              handleCorrect();
+            } else {
+              handleIncorrect([
+                valLeft !== leftTarget ? slotLeft.closest('.group-card-t2') : null,
+                valRight !== rightTarget ? slotRight.closest('.group-card-t2') : null
+              ]);
+            }
+          };
+        }
+
+        /* -------------------------
+         * TYPE 3: KÉO NHÓM ĐỒ VẬT ĐẾN ĐÚNG SỐ (Khối thống nhất)
+         * ------------------------- */
+        function renderType3(q) {
+          const isGroup2First = Math.random() > 0.5;
+
+          gameStage.innerHTML = `
+            <div class="t3-container">
+              <div class="t3-number-targets">
+                <!-- Ô SỐ 1 -->
+                <div class="unified-target-box box-1-zone drop-zone" data-target-num="1" id="t3-box-1">
+                  <div class="digit-badge digit-1">1</div>
+                  <div class="box-name">SỐ 1</div>
+                  <div class="group-block-slot" id="t3-slot-1"></div>
+                </div>
+
+                <!-- Ô SỐ 2 -->
+                <div class="unified-target-box box-2-zone drop-zone" data-target-num="2" id="t3-box-2">
+                  <div class="digit-badge digit-2">2</div>
+                  <div class="box-name">SỐ 2</div>
+                  <div class="group-block-slot" id="t3-slot-2"></div>
+                </div>
+              </div>
+
+              <!-- KHAY 2 KHỐI NHÓM ĐỒ VẬT -->
+              <div class="unified-groups-tray drop-zone" data-target-num="tray" id="t3-tray">
+                ${isGroup2First ? `
+                  <div class="unified-group-block" data-count="2" id="block-count-2">
+                    <span>${q.itemEmoji}</span>
+                    <span>${q.itemEmoji}</span>
+                  </div>
+                  <div class="unified-group-block" data-count="1" id="block-count-1">
+                    <span>${q.itemEmoji}</span>
+                  </div>
+                ` : `
+                  <div class="unified-group-block" data-count="1" id="block-count-1">
+                    <span>${q.itemEmoji}</span>
+                  </div>
+                  <div class="unified-group-block" data-count="2" id="block-count-2">
+                    <span>${q.itemEmoji}</span>
+                    <span>${q.itemEmoji}</span>
+                  </div>
+                `}
+              </div>
+            </div>
+          `;
+
+          const slot1 = document.getElementById('t3-slot-1');
+          const slot2 = document.getElementById('t3-slot-2');
+          const tray = document.getElementById('t3-tray');
+
+          function moveBlockToZone(block, zone) {
+            soundDrop();
+            if (zone.dataset.targetNum === 'tray') {
+              tray.appendChild(block);
+            } else {
+              const targetSlot = zone.dataset.targetNum === '1' ? slot1 : slot2;
+              // If already has block, return to tray
+              const existing = targetSlot.querySelector('.unified-group-block');
+              if (existing && existing !== block) {
+                tray.appendChild(existing);
+              }
+              targetSlot.appendChild(block);
+            }
+          }
+
+          document.querySelectorAll('.t3-container .drop-zone').forEach(zone => {
+            registerDropZoneTap(zone, (block, z) => moveBlockToZone(block, z));
+          });
+
+          document.querySelectorAll('.t3-container .unified-group-block').forEach(block => {
+            makeDraggable(block, {
+              type: 't3-block',
+              onDrop: (zone) => moveBlockToZone(block, zone)
+            });
+          });
+
+          btnReset.onclick = () => {
+            soundPop();
+            document.querySelectorAll('.t3-container .unified-group-block').forEach(b => tray.appendChild(b));
+          };
+
+          btnCheck.onclick = () => {
+            const blockIn1 = slot1.querySelector('.unified-group-block');
+            const blockIn2 = slot2.querySelector('.unified-group-block');
+
+            const count1 = blockIn1 ? parseInt(blockIn1.dataset.count) : null;
+            const count2 = blockIn2 ? parseInt(blockIn2.dataset.count) : null;
+
+            if (count1 === 1 && count2 === 2) {
+              handleCorrect();
+            } else {
+              handleIncorrect([
+                count1 !== 1 ? document.getElementById('t3-box-1') : null,
+                count2 !== 2 ? document.getElementById('t3-box-2') : null
+              ]);
+            }
+          };
+        }
+
+        /* -------------------------
+         * TYPE 4: CHỌN NHÓM ĐÚNG VỚI SỐ
+         * ------------------------- */
+        function renderType4(q) {
+          const target = q.targetNum; // 1 or 2
+          // Options: 1, 2, and 3 (3 is distractor only)
+          const options = [1, 2, 3].sort(() => Math.random() - 0.5);
+
+          gameStage.innerHTML = `
+            <div class="t4-container">
+              <div class="t4-center-digit">
+                <div class="big-center-number ${target === 1 ? 'digit-1' : 'digit-2'}">${target}</div>
+                <div class="big-center-label">SỐ ${target}</div>
+              </div>
+
+              <div class="t4-options-row">
+                ${options.map(cnt => {
+                  let itemsHtml = '';
+                  for (let i = 0; i < cnt; i++) {
+                    itemsHtml += `<span>${q.itemEmoji}</span>`;
+                  }
+                  return `
+                    <div class="t4-choice-card" data-count="${cnt}">
+                      ${itemsHtml}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+
+          let isProcessing = false;
+
+          document.querySelectorAll('.t4-choice-card').forEach(card => {
+            card.addEventListener('pointerdown', () => {
+              if (isProcessing) return;
+              getAudioContext();
+              const count = parseInt(card.dataset.count);
+
+              if (count === target) {
+                isProcessing = true;
+                soundSuccess();
+                card.classList.add('correct-glow');
+                handleCorrect();
+              } else {
+                soundRetry();
+                card.classList.add('wrong-shake');
+                showToast('Con đếm lại và chọn lại nhé!', false);
+                speakVietnamese('Con thử lại nhé!');
+                setTimeout(() => {
+                  card.classList.remove('wrong-shake');
+                }, 600);
+              }
+            });
+          });
+        }
+
+        /* -------------------------
+         * TYPE 5: ĐIỀN ĐỦ SỐ LƯỢNG
+         * ------------------------- */
+        function renderType5(q) {
+          const target = q.targetNum; // e.g., 2
+          const initCount = q.initialCount; // e.g., 1 (already in box)
+          // Supply extra items in tray
+          const extraCount = 2;
+
+          gameStage.innerHTML = `
+            <div class="t5-container">
+              <div class="t5-target-panel drop-zone" data-zone-id="target" id="t5-panel">
+                <div class="t5-header">
+                  <div class="digit-badge ${target === 1 ? 'digit-1' : 'digit-2'}">${target}</div>
+                  <div>
+                    <div class="box-name">CẦN ĐỦ SỐ ${target}</div>
+                    <div class="box-count-tag" id="t5-counter">Đang có: ${initCount} đồ vật</div>
+                  </div>
+                </div>
+                <div class="t5-slot" id="t5-target-slot">
+                  ${Array.from({ length: initCount }).map((_, i) =>
+                    `<div class="drag-item" data-item-id="init-${i}">${q.itemEmoji}</div>`
+                  ).join('')}
+                </div>
+              </div>
+
+              <!-- KHAY ĐỒ VẬT THÊM -->
+              <div class="items-tray drop-zone" data-zone-id="tray" id="t5-tray">
+                <span class="tray-title">Đồ vật còn lại:</span>
+                ${Array.from({ length: extraCount }).map((_, i) =>
+                  `<div class="drag-item" data-item-id="extra-${i}">${q.itemEmoji}</div>`
+                ).join('')}
+              </div>
+            </div>
+          `;
+
+          const slot = document.getElementById('t5-target-slot');
+          const tray = document.getElementById('t5-tray');
+          const counter = document.getElementById('t5-counter');
+
+          function updateCounter() {
+            counter.textContent = `Đang có: ${slot.children.length} đồ vật`;
+          }
+
+          function moveItemToZone(item, zone) {
+            soundDrop();
+            if (zone.dataset.zoneId === 'target') {
+              slot.appendChild(item);
+            } else {
+              tray.appendChild(item);
+            }
+            updateCounter();
+          }
+
+          document.querySelectorAll('.t5-container .drop-zone').forEach(zone => {
+            registerDropZoneTap(zone, (item, z) => moveItemToZone(item, z));
+          });
+
+          document.querySelectorAll('.t5-container .drag-item').forEach(item => {
+            makeDraggable(item, {
+              type: 't5-item',
+              onDrop: (zone) => moveItemToZone(item, zone)
+            });
+          });
+
+          btnReset.onclick = () => {
+            loadQuestion(currentQuestionIdx);
+          };
+
+          btnCheck.onclick = () => {
+            const currentTotal = slot.children.length;
+            if (currentTotal === target) {
+              handleCorrect();
+            } else {
+              handleIncorrect([document.getElementById('t5-panel')]);
+            }
+          };
+        }
+
+        /* -------------------------
+         * TYPE 6: NỐI TƯƠNG ỨNG
+         * ------------------------- */
+        function renderType6(q) {
+          const isRightGroup2First = Math.random() > 0.5;
+          const topGroupCount = isRightGroup2First ? 2 : 1;
+          const bottomGroupCount = isRightGroup2First ? 1 : 2;
+
+          gameStage.innerHTML = `
+            <div class="t6-container" id="t6-container">
+              <svg class="t6-svg-layer" id="t6-svg"></svg>
+
+              <!-- CỘT TRÁI: SỐ 1 VÀ SỐ 2 -->
+              <div class="t6-column">
+                <div class="t6-node t6-digit-node" data-num="1" id="node-left-1">
+                  <span>1</span>
+                  <div class="connect-dot"></div>
+                </div>
+                <div class="t6-node t6-digit-node" data-num="2" id="node-left-2">
+                  <span>2</span>
+                  <div class="connect-dot"></div>
+                </div>
+              </div>
+
+              <!-- CỘT PHẢI: NHÓM ĐỒ VẬT -->
+              <div class="t6-column">
+                <div class="t6-node t6-group-node" data-count="${topGroupCount}" id="node-right-top">
+                  <div class="connect-dot"></div>
+                  <span>${Array(topGroupCount).fill(q.itemEmoji).join(' ')}</span>
+                </div>
+                <div class="t6-node t6-group-node" data-count="${bottomGroupCount}" id="node-right-bottom">
+                  <div class="connect-dot"></div>
+                  <span>${Array(bottomGroupCount).fill(q.itemEmoji).join(' ')}</span>
+                </div>
+              </div>
+            </div>
+          `;
+
+          const svg = document.getElementById('t6-svg');
+          const container = document.getElementById('t6-container');
+          let selectedLeftNode = null;
+          const connections = {}; // leftNum -> rightNode
+
+          function getNodeCenter(node) {
+            const rect = node.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            return {
+              x: (rect.left + rect.right) / 2 - containerRect.left,
+              y: (rect.top + rect.bottom) / 2 - containerRect.top
+            };
+          }
+
+          function redrawLines() {
+            svg.innerHTML = '';
+            for (const [num, rNode] of Object.entries(connections)) {
+              const lNode = document.getElementById(`node-left-${num}`);
+              if (!lNode || !rNode) continue;
+              const p1 = getNodeCenter(lNode);
+              const p2 = getNodeCenter(rNode);
+
+              const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+              line.setAttribute('x1', p1.x);
+              line.setAttribute('y1', p1.y);
+              line.setAttribute('x2', p2.x);
+              line.setAttribute('y2', p2.y);
+              line.setAttribute('stroke', '#0284c7');
+              line.setAttribute('stroke-width', '6');
+              line.setAttribute('stroke-linecap', 'round');
+              line.setAttribute('stroke-dasharray', '8 4');
+              svg.appendChild(line);
+            }
+          }
+
+          // Node click handlers
+          document.querySelectorAll('.t6-digit-node').forEach(node => {
+            node.addEventListener('pointerdown', () => {
+              getAudioContext();
+              soundPop();
+              document.querySelectorAll('.t6-digit-node').forEach(n => n.classList.remove('is-active'));
+              selectedLeftNode = node;
+              node.classList.add('is-active');
+            });
+          });
+
+          document.querySelectorAll('.t6-group-node').forEach(node => {
+            node.addEventListener('pointerdown', () => {
+              if (!selectedLeftNode) {
+                showToast('Chạm vào số bên trái trước nhé!', false);
+                return;
+              }
+              getAudioContext();
+              soundDrop();
+              const num = selectedLeftNode.dataset.num;
+              connections[num] = node;
+              selectedLeftNode.classList.remove('is-active');
+              selectedLeftNode = null;
+              redrawLines();
+            });
+          });
+
+          btnReset.onclick = () => {
+            soundPop();
+            for (const key in connections) delete connections[key];
+            redrawLines();
+            document.querySelectorAll('.t6-node').forEach(n => n.classList.remove('is-active', 'is-matched'));
+          };
+
+          btnCheck.onclick = () => {
+            const match1 = connections['1'];
+            const match2 = connections['2'];
+
+            if (!match1 || !match2) {
+              showToast('Bé hãy nối đủ cả 2 số nhé!', false);
+              soundRetry();
+              return;
+            }
+
+            const is1Correct = parseInt(match1.dataset.count) === 1;
+            const is2Correct = parseInt(match2.dataset.count) === 2;
+
+            if (is1Correct && is2Correct) {
+              // Highlight matched lines green
+              svg.querySelectorAll('line').forEach(l => {
+                l.setAttribute('stroke', '#10b981');
+                l.setAttribute('stroke-dasharray', 'none');
+                l.setAttribute('stroke-width', '8');
+              });
+              handleCorrect();
+            } else {
+              handleIncorrect([container]);
+            }
+          };
+        }
+
+        /* -------------------------------------------------------------
+         * 7. SUCCESS & RETRY HANDLERS
+         * ------------------------------------------------------------- */
+        let isHandlingAdvance = false;
+
+        function handleCorrect() {
+          if (isHandlingAdvance) return;
+          isHandlingAdvance = true;
+
+          soundSuccess();
+
+          // Add star once per question
+          if (!answeredQuestions.has(currentQuestionIdx)) {
+            answeredQuestions.add(currentQuestionIdx);
+            totalStars++;
+            updateStatsUI();
+          }
+
+          // Random praise
+          const praise = PRAISE_LIST[Math.floor(Math.random() * PRAISE_LIST.length)];
+          showToast(praise, true);
+          speakVietnamese(praise);
+
+          // Animate mini robot
+          miniRobotIcon.style.transform = 'scale(1.25) rotate(-10deg)';
+          setTimeout(() => miniRobotIcon.style.transform = '', 600);
+
+          // Advance after 1.8s
+          setTimeout(() => {
+            isHandlingAdvance = false;
+            currentQuestionIdx++;
+            loadQuestion(currentQuestionIdx);
+          }, 1800);
+        }
+
+        function handleIncorrect(errorElements = []) {
+          soundRetry();
+          showToast('Con thử lại nhé!', false);
+          speakVietnamese('Con thử lại nhé!');
+
+          errorElements.forEach(el => {
+            if (el) {
+              el.classList.add('shake-box');
+              setTimeout(() => el.classList.remove('shake-box'), 600);
+            }
+          });
+        }
+
+        /* -------------------------------------------------------------
+         * 8. COMPLETION & CONFETTI CELEBRATION
+         * ------------------------------------------------------------- */
+        function showCompletionScreen() {
+          soundFanfare();
+          gameScreen.classList.add('hidden');
+          congratsScreen.classList.remove('hidden');
+          document.getElementById('final-star-display').textContent = `${totalStars} / 12 ⭐`;
+
+          speakVietnamese('Chúc mừng bé! Bé đã sắp xếp đúng số lượng một và hai xuất sắc!');
+
+          startConfetti();
+        }
+
+        function startConfetti() {
+          const canvas = document.getElementById('confetti-canvas');
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          canvas.width = canvas.parentElement.clientWidth;
+          canvas.height = canvas.parentElement.clientHeight;
+
+          const particles = [];
+          const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#06b6d4'];
+
+          for (let i = 0; i < 90; i++) {
+            particles.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * canvas.height - canvas.height,
+              size: Math.random() * 10 + 6,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              speedY: Math.random() * 3 + 2,
+              speedX: (Math.random() - 0.5) * 2,
+              rotation: Math.random() * 360,
+              rotSpeed: (Math.random() - 0.5) * 6
+            });
+          }
+
+          let animationFrameId;
+          function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+              p.y += p.speedY;
+              p.x += p.speedX;
+              p.rotation += p.rotSpeed;
+
+              if (p.y > canvas.height) {
+                p.y = -20;
+                p.x = Math.random() * canvas.width;
+              }
+
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate((p.rotation * Math.PI) / 180);
+              ctx.fillStyle = p.color;
+              ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+              ctx.restore();
+            });
+            animationFrameId = requestAnimationFrame(render);
+          }
+          render();
+
+          // Stop after 8 seconds
+          setTimeout(() => {
+            cancelAnimationFrame(animationFrameId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }, 8000);
+        }
+
+        // Initialize display
+        updateStatsUI();
+      })();
+    </script>
+  </body>
+</html>
