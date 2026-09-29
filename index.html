@@ -1355,13 +1355,27 @@
           }
         }
 
-        function playVietnameseAudio(audioKey, fallbackText) {
-          if (!isSoundEnabled) return;
+        function playVietnameseAudio(audioKey, fallbackText, onFinish = null) {
+          if (!isSoundEnabled) {
+            if (typeof onFinish === 'function') {
+              setTimeout(onFinish, 1000);
+            }
+            return;
+          }
           stopSpeaking();
 
           if (miniRobotIcon) {
             miniRobotIcon.classList.add('robot-speaking');
           }
+
+          let finishNotified = false;
+          const notifyFinishOnce = () => {
+            if (finishNotified) return;
+            finishNotified = true;
+            if (typeof onFinish === 'function') {
+              onFinish();
+            }
+          };
 
           // 1. First priority: Preloaded 100% authentic Vietnamese MP3 audio
           let audioSrc = null;
@@ -1380,13 +1394,17 @@
               audio.onended = () => {
                 if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
                 currentAudio = null;
+                notifyFinishOnce();
               };
 
               audio.onerror = (e) => {
                 console.warn('Audio playback error, fallback to TTS:', e);
                 currentAudio = null;
-                if (fallbackText) fallbackWebSpeech(fallbackText);
-                else if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
+                if (fallbackText) fallbackWebSpeech(fallbackText, onFinish);
+                else {
+                  if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
+                  notifyFinishOnce();
+                }
               };
 
               const playPromise = audio.play();
@@ -1394,8 +1412,11 @@
                 playPromise.catch((err) => {
                   console.warn('Audio play rejected, fallback:', err);
                   currentAudio = null;
-                  if (fallbackText) fallbackWebSpeech(fallbackText);
-                  else if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
+                  if (fallbackText) fallbackWebSpeech(fallbackText, onFinish);
+                  else {
+                    if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
+                    notifyFinishOnce();
+                  }
                 });
               }
               return;
@@ -1406,15 +1427,24 @@
 
           // 2. Secondary fallback: Web Speech API
           if (fallbackText) {
-            fallbackWebSpeech(fallbackText);
+            fallbackWebSpeech(fallbackText, onFinish);
           } else {
             if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
+            notifyFinishOnce();
           }
         }
 
-        function fallbackWebSpeech(rawText) {
-          if (!('speechSynthesis' in window)) {
+        function fallbackWebSpeech(rawText, onFinish = null) {
+          let finishNotified = false;
+          const notifyFinishOnce = () => {
+            if (finishNotified) return;
+            finishNotified = true;
             if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
+            if (typeof onFinish === 'function') onFinish();
+          };
+
+          if (!('speechSynthesis' in window)) {
+            notifyFinishOnce();
             return;
           }
           try {
@@ -1431,16 +1461,12 @@
             const viVoice = voices.find(v => (v.lang || '').toLowerCase().startsWith('vi'));
             if (viVoice) utterance.voice = viVoice;
 
-            utterance.onend = () => {
-              if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
-            };
-            utterance.onerror = () => {
-              if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
-            };
+            utterance.onend = notifyFinishOnce;
+            utterance.onerror = notifyFinishOnce;
 
             window.speechSynthesis.speak(utterance);
           } catch (e) {
-            if (miniRobotIcon) miniRobotIcon.classList.remove('robot-speaking');
+            notifyFinishOnce();
           }
         }
 
@@ -1605,14 +1631,14 @@
         }
 
         let toastTimeout = null;
-        function showToast(message, isSuccess = true) {
+        function showToast(message, isSuccess = true, duration = 1800) {
           clearTimeout(toastTimeout);
           toastText.textContent = message;
           toastIcon.textContent = isSuccess ? '⭐' : '💡';
           toastBanner.className = `toast-msg show ${isSuccess ? 'toast-success' : 'toast-retry'}`;
           toastTimeout = setTimeout(() => {
             toastBanner.classList.remove('show');
-          }, 1800);
+          }, duration);
         }
 
         // Fullscreen API toggle
@@ -2476,19 +2502,34 @@
 
           // Random praise
           const praiseObj = PRAISE_LIST[Math.floor(Math.random() * PRAISE_LIST.length)];
-          showToast(praiseObj.text, true);
-          playVietnameseAudio(praiseObj.key, praiseObj.text);
+          showToast(praiseObj.text, true, 3500);
 
           // Animate mini robot
           miniRobotIcon.style.transform = 'scale(1.25) rotate(-10deg)';
           setTimeout(() => miniRobotIcon.style.transform = '', 600);
 
-          // Advance after 1.8s
+          // Advance ONLY when praise voice finishes speaking!
+          let hasAdvanced = false;
+          const advanceToNextQuestion = () => {
+            if (hasAdvanced) return;
+            hasAdvanced = true;
+            // Short 400ms pause after voice ends for natural breathing room
+            setTimeout(() => {
+              isHandlingAdvance = false;
+              currentQuestionIdx++;
+              loadQuestion(currentQuestionIdx);
+            }, 400);
+          };
+
+          // Play praise audio and provide callback to advance once completed
+          playVietnameseAudio(praiseObj.key, praiseObj.text, advanceToNextQuestion);
+
+          // Safety guard (4.5s) to guarantee advance even if audio is blocked or interrupted
           setTimeout(() => {
-            isHandlingAdvance = false;
-            currentQuestionIdx++;
-            loadQuestion(currentQuestionIdx);
-          }, 1800);
+            if (!hasAdvanced) {
+              advanceToNextQuestion();
+            }
+          }, 4500);
         }
 
         function handleIncorrect(errorElements = []) {
